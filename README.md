@@ -14,7 +14,7 @@ Quickly change function row and scrolling defaults on MacOS
 * If the app does not show in Privacy you have to click "Show Package Contents", open "Contents", open "MacOS", and double click on the "InputPrefs" executable. This is because 10.14 added privacy restrictions that requires permission for the app to modify system preferences but it may not actually *ask* the user for those permissions unless run as a Terminal executable.
 
 ### What is this
-A MacOS menu bar app to run a script that will:
+A MacOS menu bar app that contains buttons which run scripts that will:
 * Switch the trackpad scrolling direction between "natural" and directional
 * Switch the function row on the keyboard from between standard Apple functions and F1, F2... mode.
 

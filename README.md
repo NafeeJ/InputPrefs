@@ -23,3 +23,4 @@ A MacOS menu bar app that contains buttons which run scripts that will:
 * https://joshspicer.com/applescript-mojave
 * https://apple.stackexchange.com/questions/153243/changing-trackpad-scroll-direction-with-applescript-in-yosemite
 * https://github.com/LinusU/node-appdmg
+* https://github.com/sindresorhus/LaunchAtLogin

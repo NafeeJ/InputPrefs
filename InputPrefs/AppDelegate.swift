@@ -8,6 +8,7 @@
 
 import Cocoa
 import Foundation
+import LaunchAtLogin
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -41,6 +42,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu?.addItem(NSMenuItem(title: "About InputPrefs", action: #selector(loadAboutWindow), keyEquivalent: ""))
         menu?.addItem(NSMenuItem.separator())
         
+        //get launch at login preference and make menu item with according state
+        let autoLaunchItem = NSMenuItem(title: "Launch at Login", action: #selector(switchAutoLaunch), keyEquivalent: "")
+        autoLaunchItem.state = LaunchAtLogin.isEnabled ? NSControl.StateValue.on : NSControl.StateValue.off
+        menu?.addItem(autoLaunchItem)
+        
+        menu?.addItem(NSMenuItem.separator())
+        
         //get current scrolling preference and make menu item with according state
         let scrollingItem = NSMenuItem(title: "Natural Scrolling", action: #selector(switchScrolling), keyEquivalent: "")
         scrollingItem.state = UserDefaults.standard.value(forKey: "com.apple.swipescrolldirection") as! Bool ? NSControl.StateValue.on : NSControl.StateValue.off
@@ -57,14 +65,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.title = "✲"
     }
     
+    @objc func switchAutoLaunch() {
+        menu?.item(at: 2)?.state = LaunchAtLogin.isEnabled ? NSControl.StateValue.off : NSControl.StateValue.on
+        LaunchAtLogin.isEnabled = menu?.item(at: 2)?.state == NSControl.StateValue.on
+    }
+    
     @objc func switchScrolling() {
         executeScript(script: switchScrollingScript)
-        menu?.item(at: 2)?.state = UserDefaults.standard.value(forKey: "com.apple.swipescrolldirection") as! Bool ? NSControl.StateValue.on : NSControl.StateValue.off
+        menu?.item(at: 4)?.state = UserDefaults.standard.value(forKey: "com.apple.swipescrolldirection") as! Bool ? NSControl.StateValue.on : NSControl.StateValue.off
     }
     
     @objc func switchFnKeys() {
         executeScript(script: switchFnKeysScript)
-        menu?.item(at: 3)?.state = UserDefaults.standard.value(forKey: "com.apple.keyboard.fnState") as! Bool ? NSControl.StateValue.on : NSControl.StateValue.off
+        menu?.item(at: 5)?.state = UserDefaults.standard.value(forKey: "com.apple.keyboard.fnState") as! Bool ? NSControl.StateValue.on : NSControl.StateValue.off
     }
     
     func executeScript(script: String) {

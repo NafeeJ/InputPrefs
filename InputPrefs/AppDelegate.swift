@@ -15,6 +15,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var menu: NSMenu?
     
+    //AppleScripts to switch the current default settings
     let switchScrollingScript = """
     tell application "System Preferences"
         reveal anchor "trackpadTab" of pane "com.apple.preference.trackpad"
@@ -38,9 +39,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         menu = NSMenu()
         menu?.addItem(NSMenuItem(title: "About InputPrefs", action: #selector(loadAboutWindow), keyEquivalent: ""))
-                menu?.addItem(NSMenuItem.separator())
-        menu?.addItem(NSMenuItem(title: "Natural Scrolling", action: #selector(switchScrolling), keyEquivalent: ""))
-        menu?.addItem(NSMenuItem(title: "Function Row Default", action: #selector(switchFnKeys), keyEquivalent: ""))
+        menu?.addItem(NSMenuItem.separator())
+        
+        //get current scrolling preference and make menu item with according state
+        let scrollingItem = NSMenuItem(title: "Natural Scrolling", action: #selector(switchScrolling), keyEquivalent: "")
+        scrollingItem.state = UserDefaults.standard.value(forKey: "com.apple.swipescrolldirection") as! Bool ? NSControl.StateValue.on : NSControl.StateValue.off
+        menu?.addItem(scrollingItem)
+        
+        //get current fnKeys preference and make menu item with according state
+        let fnKeysItem = NSMenuItem(title: "Function Keys", action: #selector(switchFnKeys), keyEquivalent: "")
+        fnKeysItem.state = UserDefaults.standard.value(forKey: "com.apple.keyboard.fnState") as! Bool ? NSControl.StateValue.on : NSControl.StateValue.off
+        menu?.addItem(fnKeysItem)
+        
         menu?.addItem(NSMenuItem.separator())
         menu?.addItem(NSMenuItem(title: "Quit InputPrefs", action: #selector(NSApplication.terminate(_:)), keyEquivalent: ""))
         statusItem.menu = menu
@@ -49,15 +59,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func switchScrolling() {
         executeScript(script: switchScrollingScript)
+        menu?.item(at: 2)?.state = UserDefaults.standard.value(forKey: "com.apple.swipescrolldirection") as! Bool ? NSControl.StateValue.on : NSControl.StateValue.off
     }
     
     @objc func switchFnKeys() {
         executeScript(script: switchFnKeysScript)
+        menu?.item(at: 3)?.state = UserDefaults.standard.value(forKey: "com.apple.keyboard.fnState") as! Bool ? NSControl.StateValue.on : NSControl.StateValue.off
     }
     
     func executeScript(script: String) {
         if let scriptObject = NSAppleScript(source: script) {
-            var errorDict: NSDictionary? = nil
+            var errorDict: NSDictionary?
             let _: NSAppleEventDescriptor? = scriptObject.executeAndReturnError(&errorDict)
             print(errorDict ?? "")
         }
@@ -66,9 +78,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func loadAboutWindow() {
         NSApp.orderFrontStandardAboutPanel()
         NSApp.activate(ignoringOtherApps: true)
-    }
-
-    func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
     }
 }
